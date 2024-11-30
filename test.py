@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 def rent_bike(customer_name, rental_duration):
     "A function that takes the customer's name and rental time"
@@ -16,9 +17,26 @@ def rent_bike(customer_name, rental_duration):
                 cost = firsthour+(hours)*5
         return cost
     cost = calculate_cost(rental_duration)
-    return f"Klient: {customer_name}, Koszt wynajmu: {cost} zł"
+    rental = [{"Imie:": customer_name, "Czas:": rental_duration, "Koszt:": cost}]
+    def save_rental(rental):
+        path = "rentals.json"
+        while not os.path.exists(path):
+            with open(path, 'w') as file:
+                json.dump(rental, file)
+        else:
+            with open(path, 'a') as file:
+                for rental_entry in rental:
+                    file.write(json.dumps(rental_entry) + "\n")
+    save_rental(rental)
+
+
+
 
 
 wynik = rent_bike("Maciek", "2:50")
 print (wynik)
+
+
+
+
     
