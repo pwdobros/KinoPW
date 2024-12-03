@@ -5,6 +5,8 @@ import os
 import re
 
 PATH = "rentals.json"
+firsthour = 10
+nexthour = 5
 
 def rent_bike(customer_name, rental_duration):
     "A function that takes the customer's name and rental time"
@@ -22,15 +24,27 @@ def calculate_cost(rental_duration):
     rental_duration = datetime.strptime(rental_duration, "%H:%M").time()
     hours = rental_duration.hour
     minutes = rental_duration.minute
-    firsthour = 10
     if hours < 1:
         cost = 10
     else:
         if minutes == 0:
-            cost = firsthour+(hours-1)*5
+            cost = firsthour+(hours-1)*nexthour
         else:
-            cost = firsthour+(hours)*5
+            cost = firsthour+(hours)*nexthour
     return cost
+
+def cancel_rental(customer_name, file_path=PATH):
+    """Usuwa wynajem na podstawie imienia klienta."""
+    rentals = load_rentals(file_path)
+    updated_rentals = [r for r in rentals if r["customer_name"] != customer_name]
+
+    if len(rentals) == len(updated_rentals):
+        print(f"Nie znaleziono wynajmu dla klienta: {customer_name}.")
+        return
+
+    with open(file_path, "w") as file:
+        json.dump(updated_rentals, file, indent=4)
+    print(f"Wynajem dla klienta {customer_name} został anulowany.")
 
 def save_rental(rental):
     "Saves new record to rentals.json"
@@ -117,6 +131,7 @@ def main():
                 print("Niepoprawny format. Użyj formatu HH:MM. Spróbuj ponownie.")
         calculatedtime = calculate_cost(timetocalculate)
         print (f"Kwota wynajmu za czas {timetocalculate} wynosi: {calculatedtime} zł")
+        
 
         
 
